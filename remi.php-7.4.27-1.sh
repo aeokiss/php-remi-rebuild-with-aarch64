@@ -14,6 +14,7 @@ SOURCE_VERSION_REDIS6="6.2.6-1"
 SOURCE_VERSION_IGBINARY="3.2.6-2"
 SOURCE_VERSION_MSGPACK="2.1.2-3"
 SOURCE_VERSION_APCU="5.1.21-1"
+SOURCE_VERSION_YAML="2.2.2-1"
 
 SOURCE_IMAP="https://rpms.remirepo.net/SRPMS/uw-imap-${SOURCE_VERSION_IMAP}.remi.src.rpm"
 SOURCE_PHP="https://rpms.remirepo.net/SRPMS/php-${SOURCE_VERSION_PHP}.remi.src.rpm"
@@ -25,6 +26,7 @@ SOURCE_REDIS6="https://rpms.remirepo.net/SRPMS/redis-${SOURCE_VERSION_REDIS6}.re
 SOURCE_IGBINARY="https://rpms.remirepo.net/SRPMS/php-pecl-igbinary-${SOURCE_VERSION_IGBINARY}.remi.src.rpm"
 SOURCE_MSGPACK="https://rpms.remirepo.net/SRPMS/php-pecl-msgpack-${SOURCE_VERSION_MSGPACK}.remi.src.rpm"
 SOURCE_APCU="https://rpms.remirepo.net/SRPMS/php-pecl-apcu-${SOURCE_VERSION_APCU}.remi.src.rpm"
+SOURCE_YAML="https://rpms.remirepo.net/SRPMS/php-pecl-yaml-${SOURCE_VERSION_YAML}.remi.src.rpm"
 
 RPM_IMAP_DEVEL="uw-imap-devel-${SOURCE_VERSION_IMAP}${DEFINE_RPM_DIST}.${DEFINE_ARCHITECTURE}.rpm"
 RPM_LIBC_CLIENT="libc-client-${SOURCE_VERSION_IMAP}${DEFINE_RPM_DIST}.${DEFINE_ARCHITECTURE}.rpm"
@@ -45,6 +47,8 @@ RPM_IGBINARY="php-pecl-igbinary-${SOURCE_VERSION_IGBINARY}${DEFINE_RPM_DIST}.${S
 RPM_IGBINARY_DEVEL="php-pecl-igbinary-devel-${SOURCE_VERSION_IGBINARY}${DEFINE_RPM_DIST}.${SOURCE_SHORT_VERSION_PHP}.${DEFINE_ARCHITECTURE}.rpm"
 RPM_REDIS5="redis-${SOURCE_VERSION_REDIS5}${DEFINE_RPM_DIST}.${DEFINE_ARCHITECTURE}.rpm"
 RPM_REDIS6="redis-${SOURCE_VERSION_REDIS6}${DEFINE_RPM_DIST}.${DEFINE_ARCHITECTURE}.rpm"
+RPM_PHP_REDIS5="php-pecl-redis5-${SOURCE_VERSION_PHP_REDIS5}${DEFINE_RPM_DIST}.${SOURCE_SHORT_VERSION_PHP}.${DEFINE_ARCHITECTURE}.rpm"
+RPM_YAML="php-pecl-yaml-${SOURCE_VERSION_YAML}${DEFINE_RPM_DIST}.${SOURCE_SHORT_VERSION_PHP}.${DEFINE_ARCHITECTURE}.rpm"
 
 DIR_HOME=`echo ~`
 DIR_BUILD_RPMS_ARCHITECTURE="${DIR_HOME}/rpmbuild/RPMS/$DEFINE_ARCHITECTURE"
@@ -55,7 +59,7 @@ DIR_DEST="${DIR_HOME}/remi/php-${SOURCE_VERSION_PHP}${DEFINE_RPM_DIST}.${DEFINE_
 rm -rf $DIR_HOME/rpmbuild
 rm -rf $DIR_DEST
 
-yum -y install rpm-build aspell-devel autoconf automake bzip2-devel firebird-devel freetds-devel gcc gcc-c++ gdbm-devel gmp-devel httpd-devel httpd-filesystem krb5-devel libacl-devel libdb-devel libstdc++-devel libtidy-devel libtool libtool-ltdl-devel lmdb-devel net-snmp-devel nginx-filesystem oniguruma-devel openssl-devel pam-devel perl pkgconfig postgresql-devel smtpdaemon systemtap-sdt-devel tokyocabinet-devel unixODBC-devel enchant-devel gd-devel libcurl-devel libedit-devel libxslt-devel libsodium-devel systemd-devel sqlite-devel libzip-devel php-fedora-autoloader-devel lz4-devel liblzf-devel
+yum -y install rpm-build aspell-devel autoconf automake bzip2-devel firebird-devel freetds-devel gcc gcc-c++ gdbm-devel gmp-devel httpd-devel httpd-filesystem krb5-devel libacl-devel libdb-devel libstdc++-devel libtidy-devel libtool libtool-ltdl-devel lmdb-devel net-snmp-devel nginx-filesystem oniguruma-devel openssl-devel pam-devel perl pkgconfig postgresql-devel smtpdaemon systemtap-sdt-devel tokyocabinet-devel unixODBC-devel enchant-devel gd-devel libcurl-devel libedit-devel libxslt-devel libsodium-devel systemd-devel sqlite-devel libzip-devel php-fedora-autoloader-devel lz4-devel liblzf-devel libyaml-devel
 
 ################################################################################
 # Download and build the University of Washington IMAP
@@ -174,12 +178,23 @@ yum -y localinstall $DIR_BUILD_RPMS_ARCHITECTURE/$RPM_REDIS6
 
 ################################################################################
 rpmbuild --define "dist ${DEFINE_RPM_DIST}" --rebuild $SOURCE_PHP_REDIS5
+if [ ! -f $DIR_BUILD_RPMS_ARCHITECTURE/$RPM_PHP_REDIS5 ]; then
+    echo "[ERROR] Can not found file : ${DIR_BUILD_RPMS_ARCHITECTURE}/${RPM_PHP_REDIS5}"
+    exit 1
+fi
 
-yum -y remove rpm-build aspell-devel autoconf automake bzip2-devel firebird-devel freetds-devel gcc gcc-c++ gdbm-devel gmp-devel httpd-devel httpd-filesystem krb5-devel libacl-devel libdb-devel libstdc++-devel libtidy-devel libtool libtool-ltdl-devel lmdb-devel net-snmp-devel nginx-filesystem oniguruma-devel openssl-devel pam-devel perl pkgconfig postgresql-devel smtpdaemon systemtap-sdt-devel tokyocabinet-devel unixODBC-devel enchant-devel gd-devel libcurl-devel libedit-devel libxslt-devel libsodium-devel systemd-devel sqlite-devel libc-client uw-imap-devel recode recode-devel libargon2-devel libzip-devel php-fedora-autoloader-devel libzip php-cli php-common php-fedora-autoloader php-process php-theseer-autoload php-theseer-directoryscanner php-xml php-zetacomponents-base php-zetacomponents-console-tools lz4-devel liblzf-devel liblzf php php-pear php-pecl-apcu php-pecl-apcu-devel php-pecl-msgpack php-pecl-msgpack-devel php-pecl-igbinary php-pecl-igbinary-devel redis php-pecl-redis5 php-json
+rpmbuild --define "dist ${DEFINE_RPM_DIST}" --rebuild $SOURCE_YAML
+if [ ! -f $DIR_BUILD_RPMS_ARCHITECTURE/$RPM_YAML ]; then
+    echo "[ERROR] Can not found file : ${DIR_BUILD_RPMS_ARCHITECTURE}/${RPM_YAML}"
+    exit 1
+fi
+
+yum -y remove rpm-build aspell-devel autoconf automake bzip2-devel firebird-devel freetds-devel gcc gcc-c++ gdbm-devel gmp-devel httpd-devel httpd-filesystem krb5-devel libacl-devel libdb-devel libstdc++-devel libtidy-devel libtool libtool-ltdl-devel lmdb-devel net-snmp-devel nginx-filesystem oniguruma-devel openssl-devel pam-devel perl pkgconfig postgresql-devel smtpdaemon systemtap-sdt-devel tokyocabinet-devel unixODBC-devel enchant-devel gd-devel libcurl-devel libedit-devel libxslt-devel libsodium-devel systemd-devel sqlite-devel libc-client uw-imap-devel recode recode-devel libargon2-devel libzip-devel php-fedora-autoloader-devel libzip php-cli php-common php-fedora-autoloader php-process php-theseer-autoload php-theseer-directoryscanner php-xml php-zetacomponents-base php-zetacomponents-console-tools lz4-devel liblzf-devel liblzf php php-pear php-pecl-apcu php-pecl-apcu-devel php-pecl-msgpack php-pecl-msgpack-devel php-pecl-igbinary php-pecl-igbinary-devel redis php-pecl-redis5 php-json libyaml-devel
 
 if [ ! -d $DIR_DEST ]; then
        mkdir -p $DIR_DEST
 fi
 
 mv $DIR_BUILD_RPMS_ARCHITECTURE/* $DIR_DEST
+mv $DIR_BUILD_RPMS_NOARCH/* $DIR_DEST
 rm -rf $DIR_HOME/rpmbuild
